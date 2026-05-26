@@ -1,0 +1,61 @@
+.modal-overlay {
+  @apply fixed inset-0 bg-primary/40 backdrop-blur-sm z-50 flex items-center justify-center p-4;
+}
+
+@keyframes modalIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.modal-container {
+  @apply bg-surface border border-outline-variant/30 rounded-2xl w-full max-w-md p-6 shadow-level-2 relative;
+  animation: modalIn 150ms ease-out forwards;
+}
+.modal-header {
+  @apply flex justify-between items-center mb-6;
+}
+.modal-title {
+  @apply text-xl font-heading font-bold text-primary;
+}
+.modal-close-btn {
+  @apply p-1 rounded-lg text-on-surface-variant hover:bg-surface-dim/30 transition-colors;
+}
+.modal-label {
+  @apply text-xs font-medium text-on-surface-variant uppercase tracking-wider block mb-1;
+}
+.modal-toggle-container {
+  @apply grid grid-cols-2 gap-2 bg-surface-dim/20 p-1 rounded-xl;
+}
+.modal-toggle-btn {
+  @apply py-2 text-sm font-semibold rounded-lg transition-all;
+}
+.modal-toggle-btn-expense {
+  @apply bg-error text-white shadow-sm;
+}
+.modal-toggle-btn-income {
+  @apply bg-tertiary text-white shadow-sm;
+}
+.modal-toggle-btn-inactive {
+  @apply text-on-surface-variant hover:text-primary;
+}
+.modal-input {
+  @apply w-full bg-surface-dim/10 border border-outline-variant/50 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-secondary focus:bg-surface;
+}
+.modal-select {
+  @apply w-full bg-surface border border-outline-variant/50 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-secondary;
+}
+.modal-actions {
+  @apply flex gap-3 pt-4;
+}
+.modal-btn-cancel {
+  @apply flex-1 bg-surface border border-outline-variant text-primary py-2.5 rounded-lg text-sm font-semibold hover:bg-surface-dim/30 transition-colors;
+}
+.modal-btn-submit {
+  @apply flex-1 bg-primary text-white py-2.5 rounded-lg text-sm font-semibold hover:bg-primary/95 transition-colors;
+}

@@ -1,14 +1,22 @@
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { Home, List, PieChart, Wallet } from 'lucide-react';
+import { Home, List, PieChart, Wallet, LogOut } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 export default function Layout() {
   const location = useLocation();
+  const { user, logout } = useAuth();
   
   const navItems = [
     { name: 'Dashboard', path: '/', icon: <Home size={20} /> },
     { name: 'Transactions', path: '/transactions', icon: <List size={20} /> },
     { name: 'Insights', path: '/insights', icon: <PieChart size={20} /> },
   ];
+
+  const handleLogout = () => {
+    if (window.confirm("Are you sure you want to log out?")) {
+      logout();
+    }
+  };
 
   return (
     <div className="flex h-screen bg-background font-sans text-on-surface">
@@ -41,16 +49,24 @@ export default function Layout() {
           })}
         </nav>
         
-        <div className="p-6 border-t border-outline-variant/30">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-surface-dim flex items-center justify-center text-primary font-bold">
-              U
+        {/* User Profile Area */}
+        <div className="p-6 border-t border-outline-variant/30 flex justify-between items-center gap-2">
+          <div className="flex items-center gap-3 overflow-hidden">
+            <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold shrink-0">
+              {user?.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : 'U'}
             </div>
-            <div>
-              <p className="text-sm font-medium">User Name</p>
-              <p className="text-xs text-on-surface-variant">user@example.com</p>
+            <div className="overflow-hidden">
+              <p className="text-sm font-semibold truncate text-primary">{user?.name || 'User Name'}</p>
+              <p className="text-xs text-on-surface-variant truncate">{user?.email || 'user@example.com'}</p>
             </div>
           </div>
+          <button 
+            onClick={handleLogout}
+            title="Log Out"
+            className="p-2 text-on-surface-variant hover:text-error hover:bg-error/10 rounded-lg transition-all shrink-0"
+          >
+            <LogOut size={18} />
+          </button>
         </div>
       </aside>
 
@@ -62,9 +78,15 @@ export default function Layout() {
             <Wallet className="text-primary" size={20} />
             <span className="font-heading font-bold text-lg text-primary">FinTrack</span>
           </div>
-          <button className="p-2 bg-surface-dim rounded-md">
-             <Home size={20}/>
-          </button>
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={handleLogout}
+              className="p-2 text-on-surface-variant hover:text-error hover:bg-error/10 rounded-md transition-all"
+              title="Log Out"
+            >
+               <LogOut size={20}/>
+            </button>
+          </div>
         </header>
         
         <div className="flex-1 overflow-auto p-4 md:p-8">
