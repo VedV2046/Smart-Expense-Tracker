@@ -1,67 +1,147 @@
 .login-screen {
-  @apply min-h-screen bg-background flex items-center justify-center p-4 font-sans text-on-surface relative overflow-hidden;
-}
-.login-glow-1 {
-  @apply absolute top-1/4 left-1/4 w-72 h-72 bg-secondary/15 rounded-full filter blur-3xl pointer-events-none;
-}
-.login-glow-2 {
-  @apply absolute bottom-1/4 right-1/4 w-72 h-72 bg-tertiary/15 rounded-full filter blur-3xl pointer-events-none;
+  @apply min-h-screen flex overflow-hidden w-full font-sans bg-background relative;
 }
 
-@keyframes loginIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+/* Left Side: Visual Anchor */
+.login-left-section {
+  @apply hidden lg:flex lg:w-1/2 relative bg-[#131b2e] items-center justify-center overflow-hidden;
+}
+.login-bg-image-wrapper {
+  @apply absolute inset-0 z-0;
+}
+.login-bg-image {
+  @apply w-full h-full object-cover opacity-60;
+}
+.login-left-content {
+  @apply relative z-10 p-8 max-w-lg text-white;
+}
+.login-left-title {
+  @apply mb-4 text-white text-[48px] font-bold leading-[56px] tracking-[-0.02em] font-heading;
+}
+.login-left-desc {
+  @apply text-[#7c839b] opacity-90 text-[18px] font-normal leading-[28px] tracking-[0em];
+}
+.login-left-accent {
+  @apply absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-[#131b2e] to-transparent opacity-40;
 }
 
-.login-card {
-  @apply w-full max-w-md bg-white border border-outline-variant/30 rounded-2xl shadow-level-2 p-8 relative z-10;
-  animation: loginIn 200ms ease-out forwards;
+/* Right Side: Login Form */
+.login-right-section {
+  @apply w-full lg:w-1/2 flex flex-col justify-center items-center px-4 md:px-8 bg-surface relative min-h-screen;
 }
-.login-header {
-  @apply flex flex-col items-center mb-8;
+.login-form-wrapper {
+  @apply w-full max-w-[440px] px-4;
 }
-.login-icon-box {
-  @apply bg-primary text-white p-3 rounded-2xl shadow-level-1 mb-3;
+
+/* Brand Header */
+.login-brand-header {
+  @apply mb-8 text-center lg:text-left;
 }
-.login-title {
-  @apply text-3xl font-heading font-bold text-primary;
+.login-brand-logo {
+  @apply flex items-center justify-center lg:justify-start gap-1 mb-2;
 }
-.login-subtitle {
-  @apply text-on-surface-variant text-sm mt-1 text-center;
+.login-brand-logo-icon {
+  @apply text-primary text-[32px];
 }
+.login-brand-title {
+  @apply font-bold text-primary text-[24px] leading-[32px] tracking-[0em] font-heading;
+}
+.login-brand-subtitle {
+  @apply text-on-surface text-[24px] font-semibold leading-[32px] tracking-[0em] font-heading mt-2;
+}
+.login-brand-desc {
+  @apply text-on-surface-variant text-[16px] font-normal leading-[24px] tracking-[0em];
+}
+
+/* Form Styles */
+.login-form {
+  @apply space-y-6 w-full;
+}
+.floating-label-group {
+  position: relative;
+}
+.floating-label-group input {
+  @apply w-full px-4 py-4 border border-outline-variant rounded-xl bg-surface transition-all outline-none text-on-surface text-[16px] font-normal leading-[24px] tracking-[0em];
+}
+.floating-label-group input:focus {
+  @apply ring-2 ring-secondary border-secondary;
+}
+.floating-label-group label {
+  @apply absolute left-4 top-4 text-on-surface-variant transition-all pointer-events-none text-[12px] font-semibold leading-[16px] tracking-[0.05em];
+}
+
+.floating-label-group input:focus ~ label,
+.floating-label-group input:not(:placeholder-shown) ~ label {
+  top: -0.5rem;
+  left: 0.75rem;
+  font-size: 0.75rem;
+  color: #3b82f6; /* Secondary color */
+  background-color: white;
+  padding: 0 0.25rem;
+}
+
+.transition-all-custom {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 .login-error-alert {
-  @apply mb-5 p-4 bg-error/10 border border-error/20 rounded-xl flex items-start gap-3 text-error text-sm;
+  @apply mb-5 p-4 bg-error/10 border border-error/20 rounded-xl flex items-start gap-3 text-error text-[14px] leading-[20px];
 }
 .login-error-icon {
   @apply mt-0.5 shrink-0;
 }
-.login-field {
-  @apply mb-4;
+
+/* Actions */
+.login-actions-container {
+  @apply flex items-center justify-between;
 }
-.login-label {
-  @apply text-xs font-semibold text-on-surface-variant uppercase tracking-wider block mb-1.5;
+.login-remember-label {
+  @apply flex items-center space-x-2 cursor-pointer;
 }
-.login-input-wrapper {
-  @apply relative;
+.login-remember-checkbox {
+  @apply w-5 h-5 rounded border-outline-variant text-secondary focus:ring-secondary focus:ring-offset-0;
 }
-.login-input-icon {
-  @apply absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant;
+.login-remember-text {
+  @apply text-on-surface-variant group-hover:text-on-surface transition-colors text-[12px] font-semibold leading-[16px] tracking-[0.05em];
 }
-.login-input {
-  @apply w-full bg-surface-dim/10 border border-outline-variant/50 rounded-lg pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:border-secondary focus:bg-surface transition-all;
+.login-forgot-link {
+  @apply text-secondary hover:underline transition-all text-[12px] font-semibold leading-[16px] tracking-[0.05em];
 }
+
+/* Action Button */
 .login-btn-submit {
-  @apply w-full bg-primary text-white py-3 rounded-lg text-sm font-semibold hover:bg-primary/95 transition-all shadow-level-1 mt-6 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed;
+  @apply w-full py-4 bg-primary text-on-primary rounded-xl font-heading text-[24px] font-semibold leading-[32px] hover:bg-opacity-90 active:scale-[0.98] transition-all shadow-sm flex items-center justify-center gap-2;
 }
-.login-footer {
-  @apply mt-6 text-center text-sm text-on-surface-variant;
+
+/* Social Spacer */
+.login-spacer-container {
+  @apply mt-8 relative w-full;
+}
+.login-spacer-line-wrapper {
+  @apply absolute inset-0 flex items-center;
+}
+.login-spacer-line {
+  @apply w-full border-t border-outline-variant;
+}
+.login-spacer-text-wrapper {
+  @apply relative flex justify-center text-[12px] font-semibold leading-[16px] tracking-[0.05em] uppercase;
+}
+.login-spacer-text {
+  @apply bg-surface px-4 text-on-surface-variant font-medium;
+}
+
+/* Footer info */
+.login-footer-text {
+  @apply text-on-surface-variant text-[14px] font-normal leading-[20px] tracking-[0.01em];
 }
 .login-footer-link {
   @apply text-secondary font-semibold hover:underline ml-1;
+}
+
+/* Sticky Bottom Footer */
+.login-sticky-footer {
+  @apply absolute bottom-4 w-full max-w-[440px] px-4 flex justify-center gap-4 opacity-60;
+}
+.login-sticky-link {
+  @apply text-on-surface-variant hover:text-primary text-[11px] font-semibold leading-[14px] tracking-[0.03em];
 }

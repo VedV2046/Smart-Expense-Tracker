@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Wallet, Mail, Lock, User, AlertCircle, Loader2 } from 'lucide-react';
+import { AlertCircle, Loader2 } from 'lucide-react';
 import '../styles/Login.css';
 
 export default function Login() {
@@ -16,7 +16,8 @@ export default function Login() {
   const { login, register } = useAuth();
   const navigate = useNavigate();
 
-  const handleToggleMode = () => {
+  const handleToggleMode = (e) => {
+    e.preventDefault();
     setIsRegister(!isRegister);
     setError('');
     setName('');
@@ -51,110 +52,177 @@ export default function Login() {
 
   return (
     <div className="login-screen">
-      {/* Background glowing decorations */}
-      <div className="login-glow-1"></div>
-      <div className="login-glow-2"></div>
-
-      <div className="login-card">
-        
-        {/* App Title */}
-        <div className="login-header">
-          <div className="login-icon-box">
-            <Wallet size={32} />
-          </div>
-          <h2 className="login-title">FinTrack</h2>
-          <p className="login-subtitle">
-            {isRegister ? 'Start tracking your expenses beautifully today' : 'Welcome back! Log in to manage your finances'}
+      {/* Left Side: Visual Anchor */}
+      <div className="login-left-section">
+        <div className="login-bg-image-wrapper">
+          <img
+            alt="Security and growth"
+            className="login-bg-image"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAmv5o0xgasPIP0hoR1IKjjwThyGT1YqkpVqvIprdz47LELbBIp0f0IRPEGmTMIuxpJ4WLns4Y6W-P-9sFPEdoZT3RDxdg7HctlogPfG6JmLKqy-Gxk2JJQKWCf-T05y1Ayka3PjIptle2ic_I6Wro_pzNNY9eh9Yo9OxeeQ02ecwSMdsyuZc7N0BDfbJHZmNOg8rZtYuEMRSPBlUkdAkYsF1fm8arjM10XLFArx59s8I2JQX25S-telXtWXLIbIqxbdMIOsbB5tJE"
+          />
+        </div>
+        <div className="login-left-content">
+          <h1 className="login-left-title">Secure. Precise. Intelligent.</h1>
+          <p className="login-left-desc">
+            FinTrack Pro provides the institutional-grade tools you need to master your financial destiny with absolute clarity.
           </p>
         </div>
+        {/* Decorative accent */}
+        <div className="login-left-accent"></div>
+      </div>
 
-        {/* Error Alert */}
-        {error && (
-          <div className="login-error-alert">
-            <AlertCircle size={20} className="login-error-icon" />
-            <span>{error}</span>
+      {/* Right Side: Login Form */}
+      <main className="login-right-section">
+        <div className="login-form-wrapper">
+          {/* Logo / Brand Header */}
+          <div className="login-brand-header">
+            <div className="login-brand-logo">
+              <span className="material-symbols-outlined login-brand-logo-icon">
+                account_balance_wallet
+              </span>
+              <span className="login-brand-title">FinTrack Pro</span>
+            </div>
+            <h2 className="login-brand-subtitle">
+              {isRegister ? 'Create Account' : 'Welcome back'}
+            </h2>
+            <p className="login-brand-desc">
+              {isRegister
+                ? 'Please fill in your details to create an account.'
+                : 'Please enter your credentials to continue.'}
+            </p>
           </div>
-        )}
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
-          
-          {isRegister && (
-            <div className="login-field">
-              <label className="login-label">Full Name</label>
-              <div className="login-input-wrapper">
-                <User className="login-input-icon" size={18} />
-                <input
-                  type="text"
-                  required
-                  placeholder="John Doe"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="login-input"
-                />
-              </div>
+          {/* Error Alert */}
+          {error && (
+            <div className="login-error-alert">
+              <AlertCircle size={20} className="login-error-icon" />
+              <span>{error}</span>
             </div>
           )}
 
-          <div className="login-field">
-            <label className="login-label">Email Address</label>
-            <div className="login-input-wrapper">
-              <Mail className="login-input-icon" size={18} />
+          {/* Login Form */}
+          <form onSubmit={handleSubmit} className="login-form">
+            {/* Full Name Field (Register only) */}
+            {isRegister && (
+              <div className="floating-label-group">
+                <input
+                  id="name"
+                  name="name"
+                  type="text"
+                  required
+                  placeholder=" "
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+                <label className="transition-all-custom" htmlFor="name">
+                  Full Name
+                </label>
+              </div>
+            )}
+
+            {/* Email Field */}
+            <div className="floating-label-group">
               <input
+                id="email"
+                name="email"
                 type="email"
                 required
-                placeholder="you@example.com"
+                placeholder=" "
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="login-input"
               />
+              <label className="transition-all-custom" htmlFor="email">
+                Email Address
+              </label>
             </div>
-          </div>
 
-          <div className="login-field">
-            <label className="login-label">Password</label>
-            <div className="login-input-wrapper">
-              <Lock className="login-input-icon" size={18} />
+            {/* Password Field */}
+            <div className="floating-label-group">
               <input
+                id="password"
+                name="password"
                 type="password"
                 required
-                placeholder="••••••••"
+                placeholder=" "
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="login-input"
               />
+              <label className="transition-all-custom" htmlFor="password">
+                Password
+              </label>
+            </div>
+
+            {/* Remember & Forgot */}
+            <div className="login-actions-container">
+              <label className="login-remember-label group">
+                <input
+                  className="login-remember-checkbox"
+                  type="checkbox"
+                />
+                <span className="login-remember-text">
+                  Keep me logged in
+                </span>
+              </label>
+              <a className="login-forgot-link" href="#" onClick={(e) => e.preventDefault()}>
+                Forgot Password?
+              </a>
+            </div>
+
+            {/* Action Button */}
+            <button
+              className="login-btn-submit"
+              type="submit"
+              disabled={submitting}
+            >
+              {submitting ? (
+                <span className="flex items-center justify-center gap-2">
+                  <Loader2 size={20} className="animate-spin" />
+                  {isRegister ? 'Creating Account...' : 'Verifying...'}
+                </span>
+              ) : (
+                <span>{isRegister ? 'Create Account' : 'Sign In'}</span>
+              )}
+            </button>
+          </form>
+
+          {/* Social Login / Alternative */}
+          <div className="login-spacer-container">
+            <div className="login-spacer-line-wrapper">
+              <div className="login-spacer-line"></div>
+            </div>
+            <div className="login-spacer-text-wrapper">
+              <span className="login-spacer-text">Secure Identity</span>
             </div>
           </div>
 
-          {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={submitting}
-            className="login-btn-submit"
-          >
-            {submitting ? (
-              <>
-                <Loader2 size={18} className="animate-spin" />
-                <span>{isRegister ? 'Creating Account...' : 'Signing In...'}</span>
-              </>
-            ) : (
-              <span>{isRegister ? 'Create Account' : 'Sign In'}</span>
-            )}
-          </button>
-        </form>
-
-        {/* Toggle Mode */}
-        <div className="login-footer">
-          <span>{isRegister ? 'Already have an account? ' : "Don't have an account? "}</span>
-          <button
-            onClick={handleToggleMode}
-            className="login-footer-link"
-          >
-            {isRegister ? 'Sign In' : 'Create Account'}
-          </button>
+          {/* Footer Links */}
+          <div className="mt-6 text-center">
+            <p className="login-footer-text">
+              {isRegister ? 'Already have an account?' : "Don't have an account?"}
+              <a
+                className="login-footer-link"
+                href="#"
+                onClick={handleToggleMode}
+              >
+                {isRegister ? 'Sign In' : 'Sign Up'}
+              </a>
+            </p>
+          </div>
         </div>
 
-      </div>
+        {/* Sticky Bottom Footer (Privacy/Terms) */}
+        <footer className="login-sticky-footer">
+          <a className="login-sticky-link" href="#" onClick={(e) => e.preventDefault()}>
+            Privacy Policy
+          </a>
+          <a className="login-sticky-link" href="#" onClick={(e) => e.preventDefault()}>
+            Terms of Service
+          </a>
+          <a className="login-sticky-link" href="#" onClick={(e) => e.preventDefault()}>
+            Security
+          </a>
+        </footer>
+      </main>
     </div>
   );
 }
