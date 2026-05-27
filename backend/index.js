@@ -34,6 +34,15 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Backend is running' });
 });
 
+app.get('/api/health/db', async (req, res) => {
+  try {
+    const result = await db.query('SELECT NOW()');
+    res.json({ status: 'ok', time: result.rows[0].now });
+  } catch (err) {
+    res.status(500).json({ status: 'db error', error: err.message });
+  }
+});
+
 // ==========================================
 // AUTHENTICATION ROUTES
 // ==========================================
