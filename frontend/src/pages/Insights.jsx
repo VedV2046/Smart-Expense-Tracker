@@ -6,7 +6,7 @@ export default function Insights() {
   const [allTransactions, setAllTransactions] = useState([]);
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/transactions')
+    axios.get('/api/transactions')
       .then(res => setAllTransactions(res.data))
       .catch(err => {
         console.error("Error fetching transactions:", err);

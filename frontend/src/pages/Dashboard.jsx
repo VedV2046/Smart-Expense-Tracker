@@ -37,7 +37,7 @@ export default function Dashboard() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const fetchTransactions = () => {
-    axios.get('http://localhost:5000/api/transactions')
+    axios.get('/api/transactions')
       .then(res => {
         setAllTransactions(res.data);
         setRecentTransactions(res.data.slice(0, 4));
@@ -61,7 +61,7 @@ export default function Dashboard() {
 
   const handleAddTransaction = async (newTx) => {
     try {
-      await axios.post('http://localhost:5000/api/transactions', newTx);
+      await axios.post('/api/transactions', newTx);
       fetchTransactions();
       setIsModalOpen(false);
     } catch (err) {
@@ -72,7 +72,7 @@ export default function Dashboard() {
   const handleResetData = async () => {
     if (window.confirm("Are you sure you want to reset all data? This will permanently delete all income and expense records.")) {
       try {
-        await axios.delete('http://localhost:5000/api/transactions');
+        await axios.delete('/api/transactions');
         fetchTransactions();
       } catch (err) {
         console.error("Error resetting data:", err);

@@ -13,7 +13,7 @@ export default function Transactions() {
   const [selectedTransaction, setSelectedTransaction] = useState(null);
 
   const fetchTransactions = () => {
-    axios.get('http://localhost:5000/api/transactions')
+    axios.get('/api/transactions')
       .then(res => setAllTransactions(res.data))
       .catch(err => {
         console.error("Error fetching transactions:", err);
@@ -47,7 +47,7 @@ export default function Transactions() {
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this transaction?")) {
       try {
-        await axios.delete(`http://localhost:5000/api/transactions/${id}`);
+        await axios.delete(`/api/transactions/${id}`);
         fetchTransactions();
       } catch (err) {
         console.error("Error deleting transaction:", err);
@@ -58,7 +58,7 @@ export default function Transactions() {
   const handleResetData = async () => {
     if (window.confirm("Are you sure you want to reset all data? This will permanently delete all income and expense records.")) {
       try {
-        await axios.delete('http://localhost:5000/api/transactions');
+        await axios.delete('/api/transactions');
         fetchTransactions();
       } catch (err) {
         console.error("Error resetting data:", err);
@@ -70,10 +70,10 @@ export default function Transactions() {
     try {
       if (selectedTransaction) {
         // Edit mode
-        await axios.put(`http://localhost:5000/api/transactions/${selectedTransaction.id}`, txData);
+        await axios.put(`/api/transactions/${selectedTransaction.id}`, txData);
       } else {
         // Add mode
-        await axios.post('http://localhost:5000/api/transactions', txData);
+        await axios.post('/api/transactions', txData);
       }
       fetchTransactions();
       setIsModalOpen(false);
