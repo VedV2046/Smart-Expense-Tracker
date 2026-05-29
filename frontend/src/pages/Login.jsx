@@ -9,6 +9,7 @@ export default function Login() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
   
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -39,7 +40,7 @@ export default function Login() {
     if (isRegister) {
       result = await register(name, email, password);
     } else {
-      result = await login(email, password);
+      result = await login(email, password, rememberMe);
     }
 
     if (result.success) {
@@ -158,6 +159,8 @@ export default function Login() {
                 <input
                   className="login-remember-checkbox"
                   type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
                 />
                 <span className="login-remember-text">
                   Keep me logged in

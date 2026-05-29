@@ -10,7 +10,7 @@ axios.defaults.baseURL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 // Configure global Axios interceptors for request authentication & response auto-logout
 axios.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -25,6 +25,8 @@ axios.interceptors.response.use(
     if (error.response && (error.response.status === 401 || error.response.status === 403)) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
+      sessionStorage.removeItem('token');
+      sessionStorage.removeItem('user');
       if (!window.location.pathname.includes('/login')) {
         window.location.href = '/login';
       }
@@ -41,20 +43,23 @@ export function AuthProvider({ children }) {
   const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('user');
     setUser(null);
   };
 
   useEffect(() => {
     const initializeAuth = async () => {
-      const storedToken = localStorage.getItem('token');
-      const storedUser = localStorage.getItem('user');
+      const storedToken = localStorage.getItem('token') || sessionStorage.getItem('token');
+      const storedUser = localStorage.getItem('user') || sessionStorage.getItem('user');
 
       if (storedToken && storedUser) {
         try {
           setUser(JSON.parse(storedUser));
           const response = await axios.get('/api/auth/me');
           setUser(response.data);
-          localStorage.setItem('user', JSON.stringify(response.data));
+          const storage = localStorage.getItem('token') ? localStorage : sessionStorage;
+          storage.setItem('user', JSON.stringify(response.data));
         } catch (err) {
           console.error("Token verification failed, logging out:", err);
           logout();
@@ -66,12 +71,13 @@ export function AuthProvider({ children }) {
     initializeAuth();
   }, []);
 
-  const login = async (email, password) => {
+  const login = async (email, password, rememberMe = false) => {
     try {
       const res = await axios.post('/api/auth/login', { email, password });
       const { user, token } = res.data;
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(user));
+      const storage = rememberMe ? localStorage : sessionStorage;
+      storage.setItem('token', token);
+      storage.setItem('user', JSON.stringify(user));
       setUser(user);
       return { success: true };
     } catch (err) {
