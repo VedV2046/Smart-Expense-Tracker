@@ -100,9 +100,9 @@ export default function Dashboard() {
     const now = new Date();
     return allTransactions.filter(tx => {
       const txDate = new Date(tx.date);
-      if (timeframe === 'This Week') {
-        const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-        return txDate >= oneWeekAgo;
+      if (timeframe === 'Last Month') {
+        const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+        return txDate.getMonth() === lastMonth.getMonth() && txDate.getFullYear() === lastMonth.getFullYear();
       } else if (timeframe === 'This Year') {
         return txDate.getFullYear() === now.getFullYear();
       }
@@ -224,7 +224,7 @@ export default function Dashboard() {
             value={timeframe}
             onChange={(e) => setTimeframe(e.target.value)}
           >
-            <option>This Week</option>
+            <option>Last Month</option>
             <option>This Month</option>
             <option>This Year</option>
           </select>
