@@ -9,9 +9,44 @@
 
 @layer base {
   body {
-    @apply bg-background text-on-surface font-sans;
+    @apply bg-background text-on-surface font-sans transition-colors duration-300;
   }
   h1, h2, h3, h4, h5, h6 {
-    @apply font-heading text-primary font-semibold;
+    @apply font-heading text-primary font-semibold transition-colors duration-300;
+  }
+
+  /* Hardcoded Dark Theme Overrides */
+  body.dark,
+  body.dark .bg-background {
+    background-color: #0b0b0b !important;
+    color: #f1f5f9 !important;
+  }
+  
+  body.dark aside,
+  body.dark nav,
+  body.dark .bg-surface,
+  body.dark .bg-white {
+    background-color: #1f1f1f !important;
+    border-color: #334155 !important;
+    color: #f1f5f9 !important;
+  }
+
+  body.dark .text-primary,
+  body.dark h1, body.dark h2, body.dark h3, body.dark h4, body.dark h5, body.dark h6 {
+    color: #f8fafc !important;
+  }
+
+  body.dark .text-error {
+    color: #f87171 !important;
+  }
+
+  body.dark .text-on-surface-variant {
+    color: #cbd5e1 !important;
+  }
+
+  body.dark .bg-surface-dim,
+  body.dark .bg-surface-dim\/30,
+  body.dark .bg-secondary\/10 {
+    background-color: #334155 !important;
   }
 }

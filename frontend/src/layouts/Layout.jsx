@@ -1,10 +1,13 @@
+import { useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { Home, List, PieChart, Wallet, LogOut } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import '../styles/dark-theme.css';
 
 export default function Layout() {
   const location = useLocation();
   const { user, logout } = useAuth();
+  const [isToggled, setIsToggled] = useState(false);
   
   const navItems = [
     { name: 'Dashboard', path: '/', icon: <Home size={20} /> },
@@ -15,6 +18,18 @@ export default function Layout() {
   const handleLogout = () => {
     if (window.confirm("Are you sure you want to log out?")) {
       logout();
+    }
+  };
+
+  const handleToggle = () => {
+    const nextVal = !isToggled;
+    setIsToggled(nextVal);
+    if (nextVal) {
+      document.documentElement.classList.add('dark');
+      document.body.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      document.body.classList.remove('dark');
     }
   };
 
@@ -48,6 +63,14 @@ export default function Layout() {
             );
           })}
         </nav>
+
+        {/* Dark Theme Toggle */}
+        <div className="dark-theme-toggle">
+          <span>Theme</span>
+          <div className={`toggle ${isToggled ? 'active' : ''}`} onClick={handleToggle}>
+            <button className="circle"></button>
+          </div>
+        </div>
         
         {/* User Profile Area */}
         <div className="p-6 border-t border-outline-variant/30 flex justify-between items-center gap-2">
