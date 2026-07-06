@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { Home, List, PieChart, Wallet, LogOut } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -9,7 +9,25 @@ import darkModeIcon from '../assets/dark-mode.svg';
 export default function Layout() {
   const location = useLocation();
   const { user, logout } = useAuth();
-  const [isToggled, setIsToggled] = useState(false);
+  
+  // Lazy state initialization from localStorage
+  const [isToggled, setIsToggled] = useState(() => {
+    const savedTheme = localStorage.getItem('theme');
+    return savedTheme === 'dark';
+  });
+
+  // Synchronize CSS class and localStorage whenever state changes
+  useEffect(() => {
+    if (isToggled) {
+      document.documentElement.classList.add('dark');
+      document.body.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      document.body.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
+  }, [isToggled]);
   
   const navItems = [
     { name: 'Dashboard', path: '/', icon: <Home size={20} /> },
@@ -24,15 +42,7 @@ export default function Layout() {
   };
 
   const handleToggle = () => {
-    const nextVal = !isToggled;
-    setIsToggled(nextVal);
-    if (nextVal) {
-      document.documentElement.classList.add('dark');
-      document.body.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      document.body.classList.remove('dark');
-    }
+    setIsToggled(prev => !prev);
   };
 
   return (
