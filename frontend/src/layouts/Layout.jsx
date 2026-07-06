@@ -3,6 +3,8 @@ import { Outlet, Link, useLocation } from 'react-router-dom';
 import { Home, List, PieChart, Wallet, LogOut } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import '../styles/dark-theme.css';
+import lightModeIcon from '../assets/light-mode.svg';
+import darkModeIcon from '../assets/dark-mode.svg';
 
 export default function Layout() {
   const location = useLocation();
@@ -68,7 +70,13 @@ export default function Layout() {
         <div className="dark-theme-toggle">
           <span>Theme</span>
           <div className={`toggle ${isToggled ? 'active' : ''}`} onClick={handleToggle}>
-            <button className="circle"></button>
+            <div className="circle flex items-center justify-center p-0.5">
+              <img 
+                src={isToggled ? darkModeIcon : lightModeIcon} 
+                alt="theme icon" 
+                className="w-full h-full object-contain" 
+              />
+            </div>
           </div>
         </div>
         
