@@ -30,6 +30,15 @@ ChartJS.register(
   Filler
 );
 
+const formatDate = (dateVal) => {
+  if (!dateVal) return '';
+  const d = new Date(dateVal);
+  const day = String(d.getDate()).padStart(2, '0');
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const year = d.getFullYear();
+  return `${day}/${month}/${year}`;
+};
+
 export default function Dashboard() {
   const [timeframe, setTimeframe] = useState('This Month');
   const [allTransactions, setAllTransactions] = useState([]);
@@ -360,7 +369,7 @@ export default function Dashboard() {
                         {tx.category}
                       </span>
                     </td>
-                    <td className="py-4 text-sm text-on-surface-variant">{new Date(tx.date).toLocaleDateString()}</td>
+                    <td className="py-4 text-sm text-on-surface-variant">{formatDate(tx.date)}</td>
                     <td className={`py-4 text-right font-medium ${Number(tx.amount) > 0 ? 'text-tertiary' : 'text-primary'}`}>
                       {Number(tx.amount) > 0 ? '+' : ''}₹{Math.abs(Number(tx.amount)).toFixed(2)}
                     </td>

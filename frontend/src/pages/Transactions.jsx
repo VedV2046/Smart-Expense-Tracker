@@ -3,6 +3,15 @@ import axios from 'axios';
 import { Search, Plus, FileDown, Trash2 } from 'lucide-react';
 import TransactionModal from '../components/TransactionModal';
 
+const formatDate = (dateVal) => {
+  if (!dateVal) return '';
+  const d = new Date(dateVal);
+  const day = String(d.getDate()).padStart(2, '0');
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const year = d.getFullYear();
+  return `${day}/${month}/${year}`;
+};
+
 export default function Transactions() {
   const now = new Date();
   const currentMonthLabel = `${now.toLocaleString('default', { month: 'long' })} ${now.getFullYear()}`;
@@ -164,7 +173,7 @@ export default function Transactions() {
       tx.category,
       Number(tx.amount) > 0 ? 'Income' : 'Expense',
       tx.amount,
-      new Date(tx.date).toLocaleDateString()
+      formatDate(tx.date)
     ]);
 
     const csvContent = "data:text/csv;charset=utf-8," 
@@ -304,7 +313,7 @@ export default function Transactions() {
                             {isIncome ? 'Income' : 'Expense'}
                           </td>
                           <td className="py-4 px-6 text-on-surface-variant">
-                            {new Date(tx.date).toLocaleDateString()}
+                            {formatDate(tx.date)}
                           </td>
                           <td className={`py-4 px-6 text-right font-medium ${isIncome ? 'text-tertiary' : 'text-primary'}`}>
                             {isIncome ? '+' : ''}₹{Math.abs(Number(tx.amount)).toFixed(2)}
