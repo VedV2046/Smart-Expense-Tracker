@@ -23,12 +23,18 @@ export default function Insights() {
       });
   }, []);
 
-  const totalIncome = allTransactions
+  const now = new Date();
+  const currentMonthTransactions = allTransactions.filter(tx => {
+    const txDate = new Date(tx.date);
+    return txDate.getMonth() === now.getMonth() && txDate.getFullYear() === now.getFullYear();
+  });
+
+  const totalIncome = currentMonthTransactions
     .filter(t => Number(t.amount) > 0)
     .reduce((acc, curr) => acc + Number(curr.amount), 0);
 
   const totalExpenses = Math.abs(
-    allTransactions
+    currentMonthTransactions
       .filter(t => Number(t.amount) < 0)
       .reduce((acc, curr) => acc + Number(curr.amount), 0)
   );
@@ -54,7 +60,7 @@ export default function Insights() {
 
   // Calculate category aggregates
   const categoryExpenses = {};
-  allTransactions
+  currentMonthTransactions
     .filter(t => Number(t.amount) < 0)
     .forEach(tx => {
       const cat = tx.category || 'Other';
@@ -181,7 +187,7 @@ export default function Insights() {
     }
 
     // Subscriptions count insight
-    const subscriptionsCount = allTransactions.filter(t => t.category === 'Entertainment').length;
+    const subscriptionsCount = currentMonthTransactions.filter(t => t.category === 'Entertainment').length;
     if (subscriptionsCount >= 3) {
       insights.push({
         type: 'info',

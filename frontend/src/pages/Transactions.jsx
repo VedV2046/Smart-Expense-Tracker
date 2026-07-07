@@ -1,12 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Fragment } from 'react';
 import axios from 'axios';
 import { Search, Plus, FileDown, Trash2 } from 'lucide-react';
 import TransactionModal from '../components/TransactionModal';
 
 export default function Transactions() {
+  const now = new Date();
+  const currentMonthLabel = `${now.toLocaleString('default', { month: 'long' })} ${now.getFullYear()}`;
+
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedType, setSelectedType] = useState('All Types');
   const [selectedCategory, setSelectedCategory] = useState('All Categories');
+  const [selectedMonth, setSelectedMonth] = useState(currentMonthLabel);
   
   const [allTransactions, setAllTransactions] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -95,11 +99,61 @@ export default function Transactions() {
     const matchesCategory = selectedCategory === 'All Categories' || 
                             tx.category === selectedCategory;
     
-    return matchesSearch && matchesType && matchesCategory;
+    const txDate = new Date(tx.date);
+    const txMonthLabel = `${txDate.toLocaleString('default', { month: 'long' })} ${txDate.getFullYear()}`;
+    const matchesMonth = selectedMonth === 'All Months' || txMonthLabel === selectedMonth;
+    
+    return matchesSearch && matchesType && matchesCategory && matchesMonth;
   });
 
   // Extract unique categories from actual transactions for the filter dropdown
   const uniqueCategories = Array.from(new Set(allTransactions.map(tx => tx.category).filter(Boolean)));
+
+  // Extract unique months from actual transactions for the month dropdown filter
+  const uniqueMonths = Array.from(new Set(allTransactions.map(tx => {
+    const d = new Date(tx.date);
+    return `${d.toLocaleString('default', { month: 'long' })} ${d.getFullYear()}`;
+  }).filter(Boolean)));
+  
+  // Ensure the current month is always available as an option
+  if (!uniqueMonths.includes(currentMonthLabel)) {
+    uniqueMonths.unshift(currentMonthLabel);
+  }
+
+  // Group filtered transactions by month-year for display classification
+  const getMonthYearKey = (dateStr) => {
+    const d = new Date(dateStr);
+    return d.toLocaleString('default', { month: 'long', year: 'numeric' });
+  };
+
+  // Helper to calculate total income and total expenses for a list of transactions
+  const getGroupTotals = (transactionsList) => {
+    let income = 0;
+    let expenses = 0;
+    transactionsList.forEach(tx => {
+      const amt = Number(tx.amount);
+      if (amt > 0) {
+        income += amt;
+      } else {
+        expenses += Math.abs(amt);
+      }
+    });
+    return { income, expenses };
+  };
+
+  const groupedTransactions = {};
+  filteredTransactions.forEach(tx => {
+    const key = getMonthYearKey(tx.date);
+    if (!groupedTransactions[key]) {
+      groupedTransactions[key] = [];
+    }
+    groupedTransactions[key].push(tx);
+  });
+
+  // Sort the grouped month keys chronologically (descending)
+  const sortedGroupKeys = Object.keys(groupedTransactions).sort((a, b) => {
+    return new Date(b) - new Date(a);
+  });
 
   // Export transactions as CSV
   const handleExport = () => {
@@ -172,6 +226,16 @@ export default function Transactions() {
         </div>
         <div className="flex gap-3 w-full md:w-auto">
           <select 
+            value={selectedMonth}
+            onChange={(e) => setSelectedMonth(e.target.value)}
+            className="flex-1 md:flex-none bg-surface border border-outline-variant/50 rounded-lg px-4 py-2 text-sm focus:outline-none"
+          >
+            <option>All Months</option>
+            {uniqueMonths.map(m => (
+              <option key={m} value={m}>{m}</option>
+            ))}
+          </select>
+          <select 
             value={selectedType}
             onChange={(e) => setSelectedType(e.target.value)}
             className="flex-1 md:flex-none bg-surface border border-outline-variant/50 rounded-lg px-4 py-2 text-sm focus:outline-none"
@@ -208,42 +272,61 @@ export default function Transactions() {
               </tr>
             </thead>
             <tbody className="text-sm">
-              {filteredTransactions.map((tx) => {
-                const isIncome = Number(tx.amount) > 0;
+              {sortedGroupKeys.map(monthYear => {
+                const txs = groupedTransactions[monthYear];
+                const totals = getGroupTotals(txs);
                 return (
-                  <tr key={tx.id} className="border-b border-outline-variant/20 last:border-0 hover:bg-surface-dim/10 transition-colors">
-                    <td className="py-4 px-6">
-                      <span className="font-medium text-primary">{tx.name}</span>
-                    </td>
-                    <td className="py-4 px-6">
-                      <span className="px-3 py-1 rounded-full text-xs font-medium bg-surface-dim text-on-surface-variant inline-block">
-                        {tx.category}
-                      </span>
-                    </td>
-                    <td className="py-4 px-6 text-on-surface-variant">
-                      {isIncome ? 'Income' : 'Expense'}
-                    </td>
-                    <td className="py-4 px-6 text-on-surface-variant">
-                      {new Date(tx.date).toLocaleDateString()}
-                    </td>
-                    <td className={`py-4 px-6 text-right font-medium ${isIncome ? 'text-tertiary' : 'text-primary'}`}>
-                      {isIncome ? '+' : ''}₹{Math.abs(Number(tx.amount)).toFixed(2)}
-                    </td>
-                    <td className="py-4 px-6 text-center">
-                      <button 
-                        onClick={() => handleOpenEdit(tx)}
-                        className="text-secondary hover:underline text-xs font-medium mr-3"
-                      >
-                        Edit
-                      </button>
-                      <button 
-                        onClick={() => handleDelete(tx.id)}
-                        className="text-error hover:underline text-xs font-medium"
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
+                  <Fragment key={monthYear}>
+                    {/* Month Classification Header Row */}
+                    <tr className="bg-surface-dim/40 border-b border-outline-variant/30 text-xs font-semibold text-primary">
+                      <td colSpan="3" className="py-3 px-6 font-bold text-sm">
+                        {monthYear}
+                      </td>
+                      <td colSpan="3" className="py-3 px-6 text-right text-on-surface-variant font-medium">
+                        <span className="mr-4">Income: <span className="text-tertiary font-bold">+₹{totals.income.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span></span>
+                        <span>Expenses: <span className="text-error font-bold">-₹{totals.expenses.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span></span>
+                      </td>
+                    </tr>
+                    
+                    {txs.map((tx) => {
+                      const isIncome = Number(tx.amount) > 0;
+                      return (
+                        <tr key={tx.id} className="border-b border-outline-variant/20 last:border-0 hover:bg-surface-dim/10 transition-colors">
+                          <td className="py-4 px-6">
+                            <span className="font-medium text-primary">{tx.name}</span>
+                          </td>
+                          <td className="py-4 px-6">
+                            <span className="px-3 py-1 rounded-full text-xs font-medium bg-surface-dim text-on-surface-variant inline-block">
+                              {tx.category}
+                            </span>
+                          </td>
+                          <td className="py-4 px-6 text-on-surface-variant">
+                            {isIncome ? 'Income' : 'Expense'}
+                          </td>
+                          <td className="py-4 px-6 text-on-surface-variant">
+                            {new Date(tx.date).toLocaleDateString()}
+                          </td>
+                          <td className={`py-4 px-6 text-right font-medium ${isIncome ? 'text-tertiary' : 'text-primary'}`}>
+                            {isIncome ? '+' : ''}₹{Math.abs(Number(tx.amount)).toFixed(2)}
+                          </td>
+                          <td className="py-4 px-6 text-center">
+                            <button 
+                              onClick={() => handleOpenEdit(tx)}
+                              className="text-secondary hover:underline text-xs font-medium mr-3"
+                            >
+                              Edit
+                            </button>
+                            <button 
+                              onClick={() => handleDelete(tx.id)}
+                              className="text-error hover:underline text-xs font-medium"
+                            >
+                              Delete
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </Fragment>
                 );
               })}
               {filteredTransactions.length === 0 && (
