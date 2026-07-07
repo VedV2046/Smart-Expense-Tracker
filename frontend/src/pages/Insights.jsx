@@ -126,21 +126,44 @@ export default function Insights() {
       });
     }
 
-    // Savings insight
-    const savingsRate = totalIncome > 0 ? (currentSavings / totalIncome) * 100 : 0;
-    if (savingsRate >= 20) {
+    // Expenditure vs Income Ratio Analysis
+    const expenditureRate = totalIncome > 0 ? (totalExpenses / totalIncome) * 100 : 0;
+    if (totalIncome === 0) {
+      if (totalExpenses > 0) {
+        insights.push({
+          type: 'warning',
+          title: 'No Income Recorded',
+          message: 'You have logged expenses but no income. Add income transactions to see your expenditure-to-income analysis.',
+          icon: <AlertCircle className="text-error" />
+        });
+      }
+    } else if (expenditureRate <= 50) {
       insights.push({
         type: 'positive',
-        title: 'Healthy Savings Rate',
-        message: `Superb work! You are saving ${Math.round(savingsRate)}% of your total earnings, surpassing the standard 20% savings rule.`,
+        title: 'Excellent Budget Control',
+        message: `Your total expenditure is only ${Math.round(expenditureRate)}% of your income. You are saving more than half of what you earn!`,
         icon: <TrendingUp className="text-tertiary" />
       });
-    } else if (totalIncome > 0) {
+    } else if (expenditureRate <= 70) {
+      insights.push({
+        type: 'positive',
+        title: 'Healthy Spending Ratio',
+        message: `Your total expenditure is at a reasonable ${Math.round(expenditureRate)}% of your income. This is a very sustainable spending level that allows for regular savings.`,
+        icon: <Sparkles className="text-tertiary" />
+      });
+    } else if (expenditureRate <= 90) {
       insights.push({
         type: 'info',
-        title: 'Savings Potential',
-        message: `Your savings rate is currently ${Math.round(savingsRate)}%. Setting aside small, automatic contributions could bump you closer to the recommended 20%.`,
-        icon: <Sparkles className="text-secondary" />
+        title: 'High Expenditure Level',
+        message: `Your total expenditure consumes ${Math.round(expenditureRate)}% of your income. While still below your earnings, this leaves a smaller margin for savings. Consider cutting back on discretionary spending.`,
+        icon: <AlertCircle className="text-secondary" />
+      });
+    } else {
+      insights.push({
+        type: 'warning',
+        title: 'Critical Spending Alert',
+        message: `Your total expenditure is extremely high at ${Math.round(expenditureRate)}% of your income. This leaves less than a 10% savings buffer and could lead to financial strain. Review your largest expense categories immediately.`,
+        icon: <AlertCircle className="text-error" />
       });
     }
 
@@ -232,6 +255,46 @@ export default function Insights() {
 
         {/* Sidebar Insights */}
         <div className="space-y-6">
+          {/* Expenditure to Income Ratio Card */}
+          <div className="bg-surface p-6 rounded-2xl shadow-level-1 border border-outline-variant/30">
+            <h3 className="font-heading font-semibold text-primary mb-2">Expenditure to Income</h3>
+            <div className="flex items-baseline gap-2 mb-4">
+              <span className="text-3xl font-bold font-heading text-primary">
+                {totalIncome > 0 ? `${Math.round((totalExpenses / totalIncome) * 100)}%` : '0%'}
+              </span>
+              <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
+                totalIncome === 0 ? 'bg-surface-dim text-on-surface-variant' :
+                (totalExpenses / totalIncome) <= 0.50 ? 'bg-tertiary/20 text-tertiary' :
+                (totalExpenses / totalIncome) <= 0.70 ? 'bg-tertiary/20 text-tertiary' :
+                (totalExpenses / totalIncome) <= 0.90 ? 'bg-secondary/20 text-secondary' :
+                'bg-error/20 text-error'
+              }`}>
+                {totalIncome === 0 ? 'No Income' :
+                 (totalExpenses / totalIncome) <= 0.50 ? 'Excellent' :
+                 (totalExpenses / totalIncome) <= 0.70 ? 'Healthy' :
+                 (totalExpenses / totalIncome) <= 0.90 ? 'High' :
+                 'Critical'}
+              </span>
+            </div>
+            
+            <div className="w-full bg-surface-dim rounded-full h-2.5 mb-4">
+              <div 
+                className={`h-2.5 rounded-full transition-all duration-500 ${
+                  totalIncome === 0 ? 'bg-slate-400' :
+                  (totalExpenses / totalIncome) <= 0.70 ? 'bg-tertiary' :
+                  (totalExpenses / totalIncome) <= 0.90 ? 'bg-secondary' :
+                  'bg-error'
+                }`}
+                style={{ width: `${Math.min(100, totalIncome > 0 ? (totalExpenses / totalIncome) * 100 : 0)}%` }}
+              ></div>
+            </div>
+            
+            <div className="flex justify-between text-xs text-on-surface-variant font-medium">
+              <span>Spent: ₹{totalExpenses.toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
+              <span>Income: ₹{totalIncome.toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
+            </div>
+          </div>
+
           <div className="bg-surface p-6 rounded-2xl shadow-level-1 border border-outline-variant/30 bg-gradient-to-br from-primary to-[#1e293b] text-white">
             <h3 className="font-heading font-semibold mb-2">Predicted End of Month</h3>
             <div className="text-3xl font-bold font-heading mb-4">₹{projectedSavings.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
