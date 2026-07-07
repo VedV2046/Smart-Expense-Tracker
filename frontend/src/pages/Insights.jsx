@@ -67,27 +67,40 @@ export default function Insights() {
     .sort((a, b) => b.amount - a.amount);
 
   // Dynamic budget recommendations
-  const budgets = {
-    Food: 3000,
-    Travel: 2500,
-    Utilities: 2000,
-    Entertainment: 1500,
-    Bills: 4000,
-    Housing: 8000,
-    Other: 2000
+  // Dynamic budget recommendations based on total income
+  const idealPercentages = {
+    Food: 0.15,
+    Bills: 0.35,
+    Utilities: 0.10,
+    Stationary: 0.05,
+    Travel: 0.10,
+    Entertainment: 0.05,
+    Other: 0.10
   };
 
-  const budgetRecommendations = Object.keys(budgets).map(category => {
+  const budgetRecommendations = Object.keys(idealPercentages).map(category => {
     const spent = categoryExpenses[category] || 0;
-    const limit = budgets[category];
-    const pct = Math.min(100, Math.round((spent / limit) * 100));
+    const limit = Math.round(totalIncome * idealPercentages[category]);
+    const pct = limit > 0 ? Math.min(100, Math.round((spent / limit) * 100)) : (spent > 0 ? 100 : 0);
     
     let status = 'On Track';
     let statusColor = 'text-tertiary';
     let progressColor = 'bg-tertiary';
-    let advice = 'Well within recommended budget limit.';
+    let advice = `Well within recommended limit (${idealPercentages[category] * 100}% of income).`;
 
-    if (pct >= 85) {
+    if (limit === 0) {
+      if (spent > 0) {
+        status = 'Over Budget';
+        statusColor = 'text-error';
+        progressColor = 'bg-error';
+        advice = 'No income recorded to allocate budget.';
+      } else {
+        status = 'No Budget';
+        statusColor = 'text-on-surface-variant';
+        progressColor = 'bg-surface-dim';
+        advice = 'Log income to establish budget.';
+      }
+    } else if (pct >= 85) {
       status = `Reduce by ₹${Math.round(spent - limit * 0.8).toLocaleString()}`;
       statusColor = 'text-error';
       progressColor = 'bg-error';
@@ -109,7 +122,7 @@ export default function Insights() {
       progressColor,
       advice
     };
-  }).filter(b => b.spent > 0);
+  }).filter(b => b.spent > 0 || b.limit > 0);
 
   // Dynamic smart analysis list
   const getSmartAnalysis = () => {
