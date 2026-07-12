@@ -56,30 +56,43 @@ A full-stack personal finance web application that helps users track expenses, m
 
 ```
 Smart-Expense-Tracker/
+├── backend/
+│   ├── db.js                         # PostgreSQL connection pool
+│   ├── index.js                      # Express app entry point
+│   └── package.json
+│
 ├── frontend/
 │   ├── public/
 │   ├── src/
+│   │   ├── assets/
+│   │   │   ├── preview-ss.png        # App preview screenshot
+│   │   │   ├── hero.png
+│   │   │   ├── dark-mode.svg
+│   │   │   └── light-mode.svg
+│   │   ├── components/
+│   │   │   └── TransactionModal.jsx  # Add/Edit transaction modal
 │   │   ├── context/
 │   │   │   └── AuthContext.jsx       # Auth state, login, register, logout
+│   │   ├── layouts/
+│   │   │   └── Layout.jsx            # Shared page layout
 │   │   ├── pages/
 │   │   │   ├── Login.jsx             # Login & Register page
 │   │   │   ├── Dashboard.jsx         # Main expense dashboard
-│   │   │   └── Insights.jsx          # Spending insights & charts
-│   │   ├── styles/                   # CSS files
-│   │   └── main.jsx
+│   │   │   ├── Insights.jsx          # Spending insights & charts
+│   │   │   └── Transactions.jsx      # Transactions list page
+│   │   ├── styles/
+│   │   │   ├── App.css
+│   │   │   ├── dark-theme.css
+│   │   │   ├── index.css
+│   │   │   ├── Login.css
+│   │   │   └── Transactions.css
+│   │   ├── utils/
+│   │   │   ├── App.jsx
+│   │   │   └── main.jsx
 │   ├── .env                          # VITE_API_URL (local)
 │   ├── vercel.json                   # React Router fix for Vercel
+│   ├── tailwind.config.js
 │   └── vite.config.js
-│
-├── backend/
-│   ├── routes/
-│   │   ├── auth.js                   # /api/auth/register, /api/auth/login
-│   │   └── expenses.js               # /api/expenses CRUD
-│   ├── middleware/
-│   │   └── auth.js                   # JWT verification middleware
-│   ├── db.js                         # PostgreSQL connection pool
-│   ├── server.js                     # Express app entry point
-│   └── .env                          # DATABASE_URL, JWT_SECRET (local)
 │
 └── README.md
 ```
